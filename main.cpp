@@ -256,8 +256,8 @@ int main(int argc, char** argv)
 
 #ifdef SS
 
-    const int K = 256;
-    const int SS_HEAPSIZE = 256;
+    const int K = 32;
+    const int SS_HEAPSIZE = 32;
 
     SpaceSaving * ss = NULL;
     ss = new SpaceSaving(K, SS_HEAPSIZE);

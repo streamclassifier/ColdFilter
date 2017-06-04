@@ -5,7 +5,7 @@ using namespace std;
 class SPA
 {
 public:
-	virtual void Insert(unsigned int key, int f) = 0;
+	virtual void Insert(unsigned int key, int f, int seq) = 0;
 };
 
 #endif // _SPA_H

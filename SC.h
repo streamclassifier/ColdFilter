@@ -38,15 +38,17 @@ public:
 	~SC();
 
 	//periodical refreshing for continuous top-k;
-	void init_array();
+	void init_array_period();
+	
+	void init_array_all();
 
 	void init_spa(SPA * _spa);
 
-	void Insert(uint key);
+	void Insert(uint key,  int seq);
 
-	void Insert_SC_SPA(uint kick_ID, int kick_f);
+	void Insert_SC_SPA(uint kick_ID, int kick_f, int seq);
 
-	void refresh();
+	void refresh(int seq);
 
 	int Query(uint key);
 };
@@ -117,7 +119,7 @@ SC::~SC()
 
 }
 //periodical refreshing for continuous top-k;
-void SC::init_array()
+void SC::init_array_period()
 {
 	for(int i = 0; i < w_word; i++)
 	{
@@ -153,12 +155,19 @@ void SC::init_array()
 	}
 }
 
+void SC::init_array_all()
+{
+	memset(L1, 0, sizeof(ull) * w_word);
+	memset(L2, 0, sizeof(short int) * w2);
+}
+
+
 void SC::init_spa(SPA * _spa)
 {
 	spa = _spa;
 }
 
-void SC::Insert(uint key)
+void SC::Insert(uint key, int seq)
 {
 	int bucket_id = key % bucket_num;
 	// int bucket_id = key & 0x2FF;
@@ -207,7 +216,7 @@ void SC::Insert(uint key)
 
 	for(int i = start_point; i < 16; i++)
 	{
-		Insert_SC_SPA(ID[bucket_id][i], counter[bucket_id][i]);
+		Insert_SC_SPA(ID[bucket_id][i], counter[bucket_id][i], seq);
 		ID[bucket_id][i] = 0;
 		counter[bucket_id][i] = 0;
 	}
@@ -218,7 +227,7 @@ void SC::Insert(uint key)
 	cur_pos[bucket_id] = start_point + 1;
 
 }
-void SC::Insert_SC_SPA(uint kick_ID, int kick_f)
+void SC::Insert_SC_SPA(uint kick_ID, int kick_f, int seq)
 {
 
 	int V1 = 1 << 30;
@@ -303,18 +312,19 @@ void SC::Insert_SC_SPA(uint kick_ID, int kick_f)
 	int Delta2 = T2 - V2;
 	kick_f -= Delta2;
 
-	
-	spa->Insert(kick_ID, kick_f);
+	spa->Insert(kick_ID, kick_f, seq);
 	
 }
-void SC::refresh()
+void SC::refresh(int seq)
 {
 	for(int i = 0; i < bucket_num; i++)
 	{
 		for(int j = 0; j < counter_num; j++)
 		{
-			Insert_SC_SPA(ID[i][j], counter[i][j]);
+			Insert_SC_SPA(ID[i][j], counter[i][j], seq);
+			ID[i][j] = counter[i][j] = 0;
 		}
+		cur_pos[i] = 0;
 	}
 	return;
 }

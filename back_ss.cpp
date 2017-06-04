@@ -1,3 +1,67 @@
+#ifndef _SPACESAVING_H
+#define _SPACESAVING_H
+
+#include <cstdio>
+#include <cstring>
+#include "params.h"
+#include "SpaceSavingHeap.h"
+using namespace std;
+
+class SpaceSaving
+{
+public:
+	SpaceSavingHeap heap;
+	
+	SpaceSaving(uint _k, uint _hsize);
+	~SpaceSaving();
+	
+	void insert(const char *key);
+	void GetTopK(char **Ans) const;
+	void GetFreq(uint limit, char **Ans) const;
+	uint query(const char *key) const;
+	
+private:
+	SpaceSaving();
+	SpaceSaving(const SpaceSaving &);
+	SpaceSaving &operator =(const SpaceSaving &);
+};
+
+
+SpaceSaving :: 
+SpaceSaving(uint _k, uint _hsize): heap(_k, _hsize){
+}
+
+SpaceSaving :: 
+~SpaceSaving(){
+}
+
+void SpaceSaving ::
+insert(const char *key){
+	char *tkey = new char[100 + 1];	
+	strcpy(tkey, key);
+	heap.insert(tkey);
+}
+
+void SpaceSaving ::
+GetTopK(char **Ans) const{
+	heap.GetTopK(Ans);
+}
+
+void SpaceSaving ::
+GetFreq(uint limit, char **Ans) const{
+	heap.GetFreq(limit, Ans);
+}
+
+uint SpaceSaving ::
+query(const char *key) const{
+	return heap.query(key);
+}
+
+#endif//_SPACESAVING_H
+
+
+
+
 #ifndef _SPACESAVINGHEAP_H
 #define _SPACESAVINGHEAP_H
 
@@ -21,7 +85,7 @@ public:
 	};
 	
 	struct node{
-		uint *key;
+		const char *key;
 		
 		struct bkt *f;
 		struct node *bprv, *bnxt;
@@ -45,11 +109,11 @@ public:
 	
 	SpaceSavingHeap(uint _k, uint _hsize);
 	~SpaceSavingHeap();
-	void Insert(uint key, int f);
+	void insert(const char *key);
 	bool full() const;
-	void GetTopK(uint *Ans) const;
-	void GetFreq(uint limit, uint *Ans) const;
-	uint Query(uint key) const;
+	void GetTopK(char **Ans) const;
+	void GetFreq(uint limit, char **Ans) const;
+	uint query(const char *key) const;
 
 private:
 	SpaceSavingHeap();
@@ -80,16 +144,16 @@ SpaceSavingHeap(uint _k, uint _m): k(_k), n(0), m(_m), NHASHBKT(2 * _k), least(N
 
 SpaceSavingHeap ::
 ~SpaceSavingHeap(){
-	// for (uint i = 0; i < m; ++i)
-	// 	if (node_buf[i].key)
-	// 		delete []node_buf[i].key;
+	for (uint i = 0; i < m; ++i)
+		if (node_buf[i].key)
+			delete []node_buf[i].key;
 	delete []node_buf;
 	delete []bkt_buf;
 	delete []hash;
 }
 
 void SpaceSavingHeap ::
-Insert(uint key, int f){
+insert(const char *key){
 /*
 	static uint T_T = 0;
 
@@ -133,12 +197,12 @@ Insert(uint key, int f){
 	//printf("insert: %02x%02x%02x\n", (unsigned char)key[0],(unsigned char)key[1],(unsigned char)key[2]);
 
 
-	int index = hashfunc.Str2Int((cuc *)&key, 1, 4) % NHASHBKT;
+	int index = hashfunc.Str2Int((cuc *)key, 1, strlen(key)) % NHASHBKT;
 	
 
 	struct node *p, **pp;
 	for (pp = &hash[index], p = *pp; p; pp = &p -> hnxt, p = *pp)
-	 if (p -> key == key)
+	 if (strcmp(p -> key, key) == 0)
 	  break;
 	//puts("1st");
 	if (p == NULL){
@@ -175,8 +239,7 @@ Insert(uint key, int f){
 			}
 			return ;
 		} else {
-			p = least -> first; 
-			// delete []p -> key;
+			p = least -> first; delete []p -> key;
 			p -> key = key;
 			
 			if (pp != &p -> hnxt){
@@ -188,9 +251,8 @@ Insert(uint key, int f){
 			}
 			p -> hnxt = NULL;
 		}
-	} 
-	else {
-		// delete []key;
+	} else {
+		delete []key;
 	}
 	//puts("half");
 	struct bkt *b = p -> f;
@@ -245,7 +307,7 @@ full() const{
 }
 
 void SpaceSavingHeap ::
-GetTopK(uint *Ans) const{
+GetTopK(char **Ans) const{
 	struct node *t = least -> first;
 	for (uint i = k; i < m; ++i)
 		if (t -> bnxt != t -> f -> first)
@@ -259,10 +321,9 @@ GetTopK(uint *Ans) const{
 		}
 
 	for (uint i = 0; i < k; ++i){
-		// uint l = strlen(t -> key);
-		// char *tkey = new char[l+1]; 
-		// strcpy(tkey, t -> key);
-		Ans[i] = t -> key;
+		uint l = strlen(t -> key);
+		char *tkey = new char[l+1]; strcpy(tkey, t -> key);
+		Ans[i] = tkey;
 		if (t -> bnxt != t -> f -> first)
 			t = t -> bnxt;
 		else {
@@ -276,7 +337,7 @@ GetTopK(uint *Ans) const{
 }
 
 void SpaceSavingHeap ::
-GetFreq(uint limit, uint *Ans) const{
+GetFreq(uint limit, char **Ans) const{
 	uint i = 0;
 	struct bkt *b;
 	for (b = least; b && b -> cnt < limit; b = b -> prv)
@@ -285,10 +346,9 @@ GetFreq(uint limit, uint *Ans) const{
 	for (; b; b = b -> prv){
 		struct node *p = b -> first;
 		do {
-			// uint l = strlen(p -> key);
-			// char *tkey = new char[l+1];
-			// strcpy(tkey, p -> key);
-			Ans[i++] = p -> key;
+			uint l = strlen(p -> key);
+			char *tkey = new char[l+1]; strcpy(tkey, p -> key);
+			Ans[i++] = tkey;
 			p = p -> bnxt;
 		} while (p != b -> first);
 	}
@@ -307,11 +367,11 @@ GetFreq(uint limit, uint *Ans) const{
 }
 
 uint SpaceSavingHeap ::
-Query(uint key) const{
-	int index = hashfunc.Str2Int((cuc *)&key, 1, 4) % NHASHBKT;
+query(const char *key) const{
+	int index = hashfunc.Str2Int((cuc *)key, 1, strlen(key)) % NHASHBKT;
 	
 	for (struct node *p = hash[index]; p; p = p -> hnxt)
-	 if (key == p -> key)
+	 if (strcmp(key, p -> key) == 0)
 		return p -> f -> cnt;
 			
 	return 0;

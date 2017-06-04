@@ -8,50 +8,55 @@
 #include <iostream>
 #include <string>
 #include "params.h"
+#include "SPA.h"
 
 using namespace std;
 
-class SS1
+class SS1: public SPA
 {
 private:
 	uint *ID;
 	int *counter;
-	int d;
+
+	int K;
+	int heapsize;
 
 public:
-	SS1(int _d)
+	SS1(int _K, int _heapsize)
 	{
-		d = _d;
-		ID = new uint[d];
-		counter = new int[d];
+		K = _K;
+		heapsize = _heapsize;
 
-		memset(ID, 0, sizeof(uint) * d);
-		memset(counter, 0, sizeof(int) * d);
+		ID = new uint[heapsize];
+		counter = new int[heapsize];
+
+		memset(ID, 0, sizeof(uint) * heapsize);
+		memset(counter, 0, sizeof(int) * heapsize);
 	}
-	void Insert(uint ip)
+	void Insert(uint key, int f, int seq)
 	{
 		int min_value = 1 << 30;
 		int min_index = 0;
 		bool FLAG = false; 
 
-		for(int i = 0; i < d; i++)
+		for(int i = 0; i < heapsize; i++)
 		{
-			if(ID[i] == ip)
+			if(ID[i] == key)
 			{
-				counter[i] ++;
+				counter[i] += f;
 				return;
 			}
 		}
-		for(int i = 0; i < d; i++)
+		for(int i = 0; i < heapsize; i++)
 		{
 			if(ID[i] == 0)
 			{
-				ID[i] = ip;
-				counter[i] ++;
+				ID[i] = key;
+				counter[i] += f;
 				return;	
 			}
 		}
-		for(int i = 0; i < d; i++)
+		for(int i = 0; i < heapsize; i++)
 		{
 			if(counter[i] < min_value) 
 			{
@@ -59,13 +64,13 @@ public:
 				min_index = i;
 			}
 		}
-		ID[min_index] = ip;
-		counter[min_index] ++;
+		ID[min_index] = key;
+		counter[min_index] += f;
 		return;
 	}
-	uint Query(const int x)
+	uint * Get_ID()
 	{
-		return ID[x];
+		return ID;
 	}
 	int * Get_count()
 	{

@@ -20,7 +20,7 @@ private:
 public:
 	CUsketch(double M, int _d);
 	~CUsketch();
-	virtual void Insert(uint key, int f);
+	virtual void Insert(uint key, int f, int seq);
 	int Query(uint key);
 
 };
@@ -44,7 +44,7 @@ CUsketch::~CUsketch()
 		delete bobhash[i];
 	delete[] bobhash;
 }
-void CUsketch::Insert(unsigned int key, int f)
+void CUsketch::Insert(unsigned int key, int f, int seq)
 {
 	int index[MAX_HASH_NUM];
 	int value[MAX_HASH_NUM];

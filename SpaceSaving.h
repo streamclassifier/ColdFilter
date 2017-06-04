@@ -15,10 +15,10 @@ public:
 	SpaceSaving(uint _k, uint _hsize);
 	~SpaceSaving();
 	
-	void insert(const char *key);
+	void Insert(uint key, int f);
 	void GetTopK(char **Ans) const;
 	void GetFreq(uint limit, char **Ans) const;
-	uint query(const char *key) const;
+	uint Query(const char *key) const;
 	
 private:
 	SpaceSaving();
@@ -36,25 +36,25 @@ SpaceSaving ::
 }
 
 void SpaceSaving ::
-insert(const char *key){
-	char *tkey = new char[100 + 1];	
-	strcpy(tkey, key);
-	heap.insert(tkey);
+Insert(uint key, int f){
+	// char *tkey = new char[100 + 1];	
+	// strcpy(tkey, key);
+	heap.insert(key, f);
 }
 
 void SpaceSaving ::
-GetTopK(char **Ans) const{
+GetTopK(uint *Ans) const{
 	heap.GetTopK(Ans);
 }
 
 void SpaceSaving ::
-GetFreq(uint limit, char **Ans) const{
+GetFreq(uint limit, uint *Ans) const{
 	heap.GetFreq(limit, Ans);
 }
 
 uint SpaceSaving ::
-query(const char *key) const{
-	return heap.query(key);
+Query(uint key) const{
+	return heap.Query(key);
 }
 
 #endif//_SPACESAVING_H

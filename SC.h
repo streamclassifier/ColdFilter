@@ -31,6 +31,7 @@ private:
 	BOBHash32 * bobhash1;
 	BOBHash32 ** bobhash2;
 
+	int cur_kick;
 public:
 	//_bucket_num: 16; _counter_num: 16; _d1/_d2: 3; M1/M2: x.xx MB; _T2: 240;
 	SC(int _bucket_num, int _counter_num, int _d1, double M1, int _d2, double M2, int _T2);
@@ -56,6 +57,7 @@ public:
 //_bucket_num: 16; _counter_num: 16; _d1/_d2: 3; M1/M2: x.xx MB; _T2: 240;
 SC::SC(int _bucket_num, int _counter_num, int _d1, double M1, int _d2, double M2, int _T2)
 {
+	cur_kick = 0;
 	//init the buckets
 	bucket_num = _bucket_num;
 	counter_num = _counter_num;
@@ -96,6 +98,8 @@ SC::SC(int _bucket_num, int _counter_num, int _d1, double M1, int _d2, double M2
 		bobhash2[i] = new BOBHash32(1000 + i);
 
 	spa = NULL;
+
+	// srand(time(NULL));
 }
 
 SC::~SC()
@@ -212,19 +216,36 @@ void SC::Insert(uint key, int seq)
 	}
 
 
-	int start_point = 8;
+/****************randomly choose one counter to kick!******************/
 
-	for(int i = start_point; i < 16; i++)
-	{
-		Insert_SC_SPA(ID[bucket_id][i], counter[bucket_id][i], seq);
-		ID[bucket_id][i] = 0;
-		counter[bucket_id][i] = 0;
-	}
+	Insert_SC_SPA(ID[bucket_id][cur_kick], counter[bucket_id][cur_kick], seq);
+	ID[bucket_id][cur_kick] = key;
+	counter[bucket_id][cur_kick] = 1;
 
-	ID[bucket_id][start_point] = key;
-	counter[bucket_id][start_point] = 1;
+	cur_kick = (cur_kick + 1) % counter_num;
+
+/********************************************************************/	
+
+
+
+
+/****************choose half of counters to kick!*****************/
 	
-	cur_pos[bucket_id] = start_point + 1;
+	// int start_point = 8;
+
+	// for(int i = start_point; i < 16; i++)
+	// {
+	// 	Insert_SC_SPA(ID[bucket_id][i], counter[bucket_id][i], seq);
+	// 	ID[bucket_id][i] = 0;
+	// 	counter[bucket_id][i] = 0;
+	// }
+
+	// ID[bucket_id][start_point] = key;
+	// counter[bucket_id][start_point] = 1;
+	
+	// cur_pos[bucket_id] = start_point + 1;
+
+/********************************************************************/	
 
 }
 void SC::Insert_SC_SPA(uint kick_ID, int kick_f, int seq)

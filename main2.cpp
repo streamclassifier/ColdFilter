@@ -515,10 +515,12 @@ int main(int argc, char** argv)
 
 #endif//SS
 
+/*******************************************************************/
 
 
 
 
+/********************* test for the FlowRadar ********************/
 
 #ifdef HC
 
@@ -636,7 +638,7 @@ int main(int argc, char** argv)
 
 
     printf("num_flow1 = %d\n", re->num_flow);
-    printf("num_flow1 = %d\n", re_sc->num_flow);
+    printf("num_flow2 = %d\n", re_sc->num_flow);
 
 
     for (int i = MAX_INSERT_PACKAGE / 2; i < package_num; i++)
@@ -707,6 +709,10 @@ int main(int argc, char** argv)
 
 
 #endif//HC
+
+
+/*****************************************************************/
+
 
 
     return 0;

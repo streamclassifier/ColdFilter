@@ -19,7 +19,7 @@ This repo also contains a small demo to show how to use this algorithms with a s
 
 ### Requirements
 
-- The gather-and-report part of SC use SIMD instructions to achieve high speed, so the cpu must support SSE2 instruction set.
+- The gather-and-report part of CF use SIMD instructions to achieve high speed, so the cpu must support SSE2 instruction set.
 - cmake >= 2.6
 - g++ (MSVC is not supported currently.)
 

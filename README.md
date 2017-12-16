@@ -38,4 +38,4 @@ cd ../
 ```
 
 ### Related paper
-[cmake](http://www.zhouy.me/paper/cf-sigmod18.pdf)
+[Cold Filter: A Meta-Framework for Faster and More Accurate Stream Processing](http://www.zhouy.me/paper/cf-sigmod18.pdf)

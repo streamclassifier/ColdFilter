@@ -36,3 +36,6 @@ make
 cd ../
 ./demo
 ```
+
+### Related paper
+[cmake](http://www.zhouy.me/paper/cf-sigmod18.pdf)
